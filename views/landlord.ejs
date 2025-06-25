@@ -1,0 +1,136 @@
+<%- include ('partials/header.ejs') %>
+
+<link rel="stylesheet" href="/styles/main.css">
+    
+    <div class="container">
+        <h2>Landlord Dashboard</h2>
+
+        <div class="intro">
+            <p>xxx, good to see ya!</p>
+        </div>
+
+        <div class="newRenter" >
+            <form action="/newRenter" method="POST" class="newRenterForm" style="border: 1px solid black; width: fit-content;">
+                <input type="text" name="newRenterName" placeholder="New Renter Name" class="newRenterForm" required>
+                <br><input type="text" name="newRenterRoom" placeholder="Room to Rent" class="newRenterForm" required>
+                <br><textarea name="newRenterDetails" placeholder="Room Details - eg. clothing store, etc." rows="3" class="newRenterForm" required></textarea>
+                <br><input type="text" name="newRenterValue" placeholder="Rent Value" class="newRenterForm" required>
+                <br><input type="date" name="newRenterContractS" class="newRenterForm" required>
+                <br><input type="date" name="newRenterContractE" class="newRenterForm" required>
+                <br><input type="submit" name="addRenter" class="newRenterForm" value=" + Add New Renter +">
+            </form>
+        </div>
+
+        <div class="info" style="display: flex;">
+            <div class="rooms">
+                <table class="roomTable">
+                    <th>Rooms</th>
+                    <tr>
+                        <td>
+                            <input type="text" name="roomId" placeholder="Room A" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="roomId" placeholder="Room B" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="roomId" placeholder="Room C" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" name="newRoom" value=" + View All Rooms +" readonly>
+            </div>
+
+            <div class="tenantInfo">
+                <table class="tenantTable">
+                    <tr>
+                        <th>Renters</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="renterId" placeholder="Renter 001" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterName" placeholder="A" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="renterId" placeholder="Renter 002" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterName" placeholder="B" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="renterId" placeholder="Renter 003" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterName" placeholder="C" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" name="more" value=" + See More +">
+            </div>
+        </div>
+
+        <div class="btns" style="display: flex;">
+            <form action="/payment" method="POST" class="actions">
+                <input type="submit" name="payments" value="Payment History">
+            </form>
+            <form action="/chat" method="POST" class="actions">
+                <input type="submit" name="chats" value="Chat With Renters">
+            </form>
+        </div>
+
+    </div>
+

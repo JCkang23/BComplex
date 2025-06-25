@@ -1,0 +1,20 @@
+
+<div class="login" style="text-align: center;">
+
+    <h2>Enter your login credentials</h2>
+    <form action="/login" method="POST" class="log">
+        <select name="role" id="function" class="form-select">
+            <option value="" data-type="select">Choose*</option>
+            <option value="landlord">Landlord</option>
+            <option value="renter">Renter</option>
+        </select>
+
+        <br><input type="text" name="email" class="form-control" placeholder="Enter email address*" required>
+        <br><input type="password" name="password_hash" class="form-control" placeholder="Enter password*" autocomplete="off" required>
+        <br><input type="submit" class="btn_btn-login" value="Login">
+    </form>
+
+    <p class="text-muted">Don't have an account? <a href="/register">Register</a></p>
+    <p class="text-muted">Back to <a href="/">Home</a></p>
+    
+</div>

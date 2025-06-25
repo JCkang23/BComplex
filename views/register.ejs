@@ -1,0 +1,31 @@
+
+<div class="register" style="text-align: center;">
+
+    <h2>Your journey start here!</h2>
+    <form action="/register" method="POST" class="reg" style="width: fit-content;">
+        <h3><%= renter ? 'Register as a Renter' : 'Register as a Landlord' %></h3>
+        <p class="text-muted">Please select your role to continue.</p>
+        
+        <br><select name="role" class="form-select" onchange="window.location.href='/register?role=' + this.value;">
+            <option value="" <%= !renter && !landlord ? 'selected' : '' %>>Role*</option>
+            <option value="landlord" <%= landlord ? 'selected' : '' %>>Landlord</option>
+            <option value="renter" <%= renter ? 'selected' : '' %>>Renter</option>
+        </select>
+
+        <% if (landlord) { %>
+            <br><input type="text" name="full_name" class="form-control" placeholder="Enter full name*" required>
+            <br><input type="text" name="email" class="form-control" placeholder="Enter email address*" required>
+            <br><input type="password" name="password_hash" class="form-control" placeholder="Enter password*" autocomplete="off" required>
+            <br><input type="number" name="rooms" min="1" max="50" placeholder="# rooms owned" required/>
+            <br><textarea name="details" class="form-control" placeholder="Details about your property (e.g., location, type of property, etc.)" rows="2" required></textarea>
+        <% } else if (renter) { %>
+            <br><input type="text" name="full_name" class="form-control" placeholder="Enter full name*" required>
+            <br><input type="text" name="email" class="form-control" placeholder="Enter email address*" required>
+            <br><input type="password" name="password_hash" class="form-control" placeholder="Enter password*" autocomplete="off" required>
+            <br><textarea name="desc" class="form-control" placeholder="Details about your activity (e.g., clothing store, barbershop, etc.)" rows="2" required></textarea>
+        <% } %>
+        <br><input type="submit" class="btn_btn-register" value="Register">
+    </form>
+    <p class="text-muted">Already have an account? <a href="/login">Login</a></p>
+    <p class="text-muted">Back to <a href="/">Home</a></p>
+</div>

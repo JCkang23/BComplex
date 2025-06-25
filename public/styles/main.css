@@ -1,0 +1,15 @@
+table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+}
+th, td {
+  background-color: #96D4D4;
+  border: 0.5px solid cadetblue;
+}
+
+.roomTable, .tenantTable {
+  width: 100%;
+  background-color: #96D4D4;
+  border: none;
+  text-align: center;
+}

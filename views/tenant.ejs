@@ -1,0 +1,50 @@
+
+<div class="container">
+    <h2>Renter Dashboard</h2>
+    
+    <div class="intro">
+        <p>Good to see you, xxx!</p>
+    </div>
+    
+    <div class="details" style="display: flex;">
+        <div class="det1">
+            <form action="">
+                <label for="">Room:</label>
+                <input type="text" name="" placeholder="Room" class="form-control">
+                <br><label for="">Monthy:</label>
+                <input type="text" name="" placeholder="$xxx" class="form-control">
+                <br><label for="">Status:</label>
+                <input type="datetime" name="detailStatus" placeholder="[current date (month + year)]" class="form-control">
+                <input type="text" name="detailStatus" placeholder="[paid/due]" class="form-control">
+            </form>
+        </div>
+        <div class="det2">
+            <img src="" alt="profile">
+        </div>
+    </div>
+
+    <div class="info">
+        <strong>Contract Info</strong>
+        <form action="">
+            <label for="contractInfo">Contract</label><br>
+            <label for="fromDate">From</label>
+            <input type="datetime" name="date1" placeholder="[date ~ from xxx]" class="form-control">
+            <label for="toDate">To</label>
+            <input type="datetime" name="date2" placeholder="[date ~ to xxx]" class="form-control">
+            <br><label for="contractStatus">Status:</label>
+            <input type="text" name="contractStatus" placeholder="[active/expired]" class="form-control">
+        </form>
+        <form action="/renewal" method="POST">
+            <input type="submit" name="renewal" value="Renew">
+        </form>
+    </div>
+
+    <div class="actions" style="display: flex;">
+        <form action="/pay">
+            <input type="submit" name="payRent" value="Pay Rent">
+        </form>
+        <form action="/renterChat">
+            <input type="submit" name="renterChat" value="Chat With Landlord">
+        </form>
+    </div>
+</div>
