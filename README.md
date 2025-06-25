@@ -34,7 +34,7 @@ A full-stack web application for **landlords and renters** to efficienttly manag
 
 ### ✅ Core Features
 
-- [ ] Database schema setup (users, rooms, contracts, payments)
+- [x] Database schema setup (users, rooms, contracts, payments)
 - [ ] User registration & login (with password hashing + JWT)
 - [ ] Role-based access for landlords and tenants
 - [ ] Room management (create, update, delete, view)
@@ -49,7 +49,7 @@ A full-stack web application for **landlords and renters** to efficienttly manag
 
 ### 🔒 Security Features
 
-- [ ] Password hashing with Bcrypt
+- [x] Password hashing with Bcrypt
 - [ ] JWT-based authentication
 
   **Potential security fearures**
