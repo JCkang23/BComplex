@@ -3,134 +3,199 @@
 <link rel="stylesheet" href="/styles/main.css">
     
     <div class="container">
-        <h2>Landlord Dashboard</h2>
+        <h2><%= landlordName %> Dashboard</h2>
 
-        <div class="intro">
-            <p>xxx, good to see ya!</p>
-        </div>
+        <div class="flex-square">
 
-        <div class="newRenter" >
-            <form action="/newRenter" method="POST" class="newRenterForm" style="border: 1px solid black; width: fit-content;">
-                <input type="text" name="newRenterName" placeholder="New Renter Name" class="newRenterForm" required>
-                <br><input type="text" name="newRenterRoom" placeholder="Room to Rent" class="newRenterForm" required>
-                <br><textarea name="newRenterDetails" placeholder="Room Details - eg. clothing store, etc." rows="3" class="newRenterForm" required></textarea>
-                <br><input type="text" name="newRenterValue" placeholder="Rent Value" class="newRenterForm" required>
-                <br><input type="date" name="newRenterContractS" class="newRenterForm" required>
-                <br><input type="date" name="newRenterContractE" class="newRenterForm" required>
-                <br><input type="submit" name="addRenter" class="newRenterForm" value=" + Add New Renter +">
-            </form>
-        </div>
+            <div class="flex-row">
+                <div class="carre-item tenants">
+                    <h4>Your Renters</h4>
 
-        <div class="info" style="display: flex;">
-            <div class="rooms">
-                <table class="roomTable">
-                    <th>Rooms</th>
-                    <tr>
-                        <td>
-                            <input type="text" name="roomId" placeholder="Room A" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="text" name="roomId" placeholder="Room B" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="text" name="roomId" placeholder="Room C" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomValue" placeholder="$ xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomRenter" placeholder="Rented by xxx" class="roomTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomStatus" placeholder="[available/occupied]" class="roomTable" readonly>
-                        </td>
-                    </tr>
-                </table>
-                <input type="submit" name="newRoom" value=" + View All Rooms +" readonly>
+                    <div class="renterTable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Renter ID</th>
+                                    <th>Room ID</th>
+                                    <th>Details</th>
+                                    <th>Value</th>
+                                    <th>Contract Start</th>
+                                    <th>Contract End</th>
+                                    <!-- <th>Status</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof renterRoomsTable !== 'undefined' && renterRoomsTable.length > 0) { %>
+                                    <% renterRoomsTable.forEach(renterRoom => { %>
+                                        <tr>
+                                            <td><%= renterRoom.renter_id %></td>
+                                            <td><%= renterRoom.room_id %></td>
+                                            <td><%= renterRoom.renter_details %></td>
+                                            <td><%= renterRoom.renter_value %></td>
+                                            <td><%= renterRoom.renter_contract_start %></td>
+                                            <td><%= renterRoom.renter_contract_end %></td>
+                                            <!-- <td>%= renterRoom.status %</td> -->
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">No renters available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <br><button id="addNewRenterForm">Add a Renter</button>
+                    <div id="addARenter" class="modal-overlay" style="display: none;">
+                        <div class="form-content">
+                            <span id="closeRenterModal" class="close-btn">&times;</span>
+
+                            <h4>Find/Add a Renter</h4>
+                            <div class="renterTable">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Preference</th>
+                                            <th>Budget</th>
+                                            <th>Activity Description</th>
+                                            <th>Match</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof tenantsTable !== 'undefined' && tenantsTable.length > 0) { %>
+                                            <% tenantsTable.forEach(tenant => { %>
+                                                <tr>
+                                                    <td><%= tenant.full_name %></td>
+                                                    <td><%= tenant.preference %></td>
+                                                    <td><%= tenant.budget %></td>
+                                                    <td><%= tenant.activity_desc %></td>
+                                                    <td><button id="addRenterForm">Add</button></td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5">No renters available</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <form action="/newRenter" method="POST" class="newRenterForm">
+                                <h4>Add a Renter Manually</h4>
+                                <input type="text" name="newRenterName" placeholder="New Renter Name" class="newRenterForm" required>
+                                <br><input type="text" name="newRenterRoom" placeholder="Room to Rent" class="newRenterForm" required>
+                                <br><textarea name="newRenterDetails" placeholder="Room Details - eg. clothing store, etc." rows="3" class="newRenterForm" required></textarea>
+                                <br><input type="text" name="newRenterValue" placeholder="Rent Value" class="newRenterForm" required>
+                                <br><input type="date" name="newRenterContractS" class="newRenterForm" required>
+                                <br><input type="date" name="newRenterContractE" class="newRenterForm" required>
+                                <br><input type="submit" name="addRenter" class="newRenterForm" value=" + Add New Renter +">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carre-item properties">
+                    <h4>Rental Spaces</h4>
+
+                    <div class="roomTable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Details</th>
+                                    <th>Type</th>
+                                    <th>Price</th>
+                                    <th>Availability</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof roomsTable !== 'undefined' && roomsTable.length > 0) { %>
+                                    <% roomsTable.forEach(room => { %>
+                                        <tr>
+                                            <td><%= room.title %></td>
+                                            <td><%= room.room_details %></td>
+                                            <td><%= room.room_type %></td>
+                                            <td><%= room.room_price %></td>
+                                            <td><%= room.is_available ? 'Available' : 'Occupied' %></td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4">No rooms available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <br><button id="addNewRoomForm">Add a Room</button>
+                    <div id="addARoom" class="modal-overlay" style="display: none;">
+                        <div class="form-content">
+                            <span id="closeRoomModal" class="close-btn">&times;</span>
+                            <form action="/newRoom" method="POST" class="newRoomForm">
+                                <h4>Create a Rental Space</h4>
+                            <input type="text" name="newRoomName" placeholder="New Room Name" class="newRoomForm" required>
+                            <br><input type="text" name="newRoomLocation" placeholder="Room Location" class="newRoomForm">
+                            <br><textarea name="newPropertyDetails" placeholder="Room Details - eg. location, type of room, etc." rows="3" class="newRoomForm" required></textarea>
+                            <br><label>Choose between one of the options below:</label>
+                                <input type="radio" name="roomType" value="commercial" class="newRoomForm" required> Commercial
+                                <input type="radio" name="roomType" value="residential" class="newRoomForm" required> Residential
+                                <input type="radio" name="roomType" value="other" class="newRoomForm" required> Other
+                            <br><input type="text" name="newRoomValue" placeholder="Rent Value" class="newRoomForm" required>
+                            <!-- <br><input type="number" name="newRoomRooms" min="1" max="50" placeholder="# rooms owned" class="newRoomForm"> -->
+                            <br><input type="submit" name="addRoom" class="newRoomForm" value=" + Add New Room +">
+                        </form>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="tenantInfo">
-                <table class="tenantTable">
-                    <tr>
-                        <th>Renters</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="text" name="renterId" placeholder="Renter 001" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterName" placeholder="A" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="text" name="renterId" placeholder="Renter 002" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterName" placeholder="B" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="text" name="renterId" placeholder="Renter 003" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterName" placeholder="C" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="renterRoom" placeholder="Rents room xxx" class="tenantTable" readonly>
-                        </td>
-                        <td>
-                            <input type="text" name="roomContract" placeholder="[active/expired]" class="tenantTable" readonly>
-                        </td>
-                    </tr>
-                </table>
-                <input type="submit" name="more" value=" + See More +">
+            
+            <div class="flex-row">
+                <div class="carre-item payments">
+                    <form action="/payment" method="GET">
+                        <input type="submit" name="payment" value="Set up payments">
+                    </form>
+                    <form action="/financialStatement" method="GET">
+                        <br><input type="submit" name="financialStatement" value="Financial Statement">
+                    </form>
+                </div>
+                <div class="carre-item chat">
+                    <form action="/chats">
+                        <input type="hidden" name="landlordId" value=" landlordId">
+                        <input type="hidden" name="landlordName" value=" landlordName">
+                        <input type="submit" name="chats" value="chats">
+                    </form>
+                </div>
             </div>
-        </div>
-
-        <div class="btns" style="display: flex;">
-            <form action="/payment" method="POST" class="actions">
-                <input type="submit" name="payments" value="Payment History">
-            </form>
-            <form action="/chat" method="POST" class="actions">
-                <input type="submit" name="chats" value="Chat With Renters">
-            </form>
         </div>
 
     </div>
 
+<script>
+    // Renter form functionality
+    document.getElementById('addNewRenterForm').onclick = function() {
+        document.getElementById('addARenter').style.display = 'flex';
+    };
+    document.getElementById('closeRenterModal').onclick = function() {
+        document.getElementById('addARenter').style.display = 'none';
+    };
+    // Room form functionality
+    document.getElementById('addNewRoomForm').onclick = function() {
+        document.getElementById('addARoom').style.display = 'flex';
+    };
+    document.getElementById('closeRoomModal').onclick = function() {
+        document.getElementById('addARoom').style.display = 'none';
+    };
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('addARenter')) {
+            document.getElementById('addARenter').style.display = 'none';
+        }
+        if (event.target == document.getElementById('addARoom')) {
+            document.getElementById('addARoom').style.display = 'none';
+        }
+    };
+</script>

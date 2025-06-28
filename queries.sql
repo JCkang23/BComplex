@@ -1,3 +1,15 @@
+-- RENTERS table
+CREATE TABLE renters (
+  id SERIAL PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  preference VARCHAR(20),
+  budget NUMERIC(10, 2) DEFAULT 0.00,
+  activity_desc TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- LANDLORDS table
 CREATE TABLE landlords (
   id SERIAL PRIMARY KEY,
@@ -5,17 +17,7 @@ CREATE TABLE landlords (
   email VARCHAR(100) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   rooms_owned INTEGER DEFAULT 0,
-  details TEXT,
   total_income NUMERIC(10, 2) DEFAULT 0.00,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
--- RENTERS table
-CREATE TABLE renters (
-  id SERIAL PRIMARY KEY,
-  full_name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  activity_desc TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -23,13 +25,28 @@ CREATE TABLE renters (
 CREATE TABLE rooms (
   id SERIAL PRIMARY KEY,
   title VARCHAR(100) NOT NULL,
-  description TEXT,
-  price NUMERIC(10, 2) NOT NULL,
+  room_details TEXT NOT NULL,
+  room_type VARCHAR(20),
+  room_price NUMERIC(10, 2),
   is_available BOOLEAN DEFAULT TRUE,
   landlord_id INTEGER REFERENCES landlords(id) ON DELETE SET NULL,
+  renter_id INTEGER REFERENCES renters(id) ON DELETE SET NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- RENTERS_ROOMS table
+CREATE TABLE renters_rooms (
+  id SERIAL PRIMARY KEY,
+  renter_id INTEGER REFERENCES renters(id) ON DELETE CASCADE,
+  room_id INTEGER REFERENCES rooms(id) ON DELETE CASCADE,
+  renter_details TEXT,
+  renter_value NUMERIC(10, 2),
+  renter_contract_start DATE,
+  renter_contract_end DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+/* Coming soon:
 -- CONTRACTS table
 CREATE TABLE contracts (
   id SERIAL PRIMARY KEY,
@@ -60,3 +77,4 @@ CREATE TABLE messages (
   message TEXT NOT NULL,
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+*/
