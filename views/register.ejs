@@ -10,11 +10,11 @@
     
     <div class="register-content">
         
-        <form action="/register" method="POST" class="reg" style="width: 100%; max-width: 400px;">
+        <form action="/register" method="POST" class="reg">
             <h3><%= renter ? 'Register as a Renter' : 'Register as a Landlord' %></h3>
-            <p class="text-muted" style="margin-bottom: 1rem;">Please select your role to continue.</p>
+            <p class="text-muted">Please select your role to continue.</p>
             
-            <div style="margin: 1rem 0;">
+            <div class="form-group">
                 <select name="role" class="form-select" onchange="window.location.href='/register?role=' + this.value;">
                     <option value="" <%= !renter && !landlord ? 'selected' : '' %>>Select your role*</option>
                     <option value="landlord" <%= landlord ? 'selected' : '' %>>🏠 Landlord</option>
@@ -23,48 +23,48 @@
             </div>
 
             <% if (landlord) { %>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="text" name="full_name" class="form-control" placeholder="Enter your full name*" required>
                 </div>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="text" name="email" class="form-control" placeholder="Enter your email address*" required>
                 </div>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="password" name="password_hash" class="form-control" placeholder="Create a strong password*" minlength="8" maxlength="20" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" autocomplete="off" required>
                     <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">Must contain uppercase, lowercase, number, and special character</small>
                 </div>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="number" name="rooms_owned" class="form-control" placeholder="Number of rooms you own*" min="1" max="50" required>
                 </div>
             <% } else if (renter) { %>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="text" name="full_name" class="form-control" placeholder="Enter your full name*" required>
                 </div>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="text" name="email" class="form-control" placeholder="Enter your email address*" required>
                 </div>
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <input type="password" name="password_hash" class="form-control" placeholder="Create a strong password*" minlength="8" maxlength="20" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" autocomplete="off" required>
                     <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">Must contain uppercase, lowercase, number, and special character</small>
                 </div>
                 
-                <div style="margin: 1rem 0; padding: 0.8rem; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600;">What type of space are you looking for?</label>
-                    <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="radio" name="looking_for" value="commercial" class="check-input" required> Commercial
+                <div class="form-group">
+                    <label>What type of space are you looking for?</label>
+                    <div class="role-selection">
+                        <label>
+                            <input type="radio" name="looking_for" value="commercial" required> Commercial
                         </label>
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="radio" name="looking_for" value="residential" class="check-input" required> Residential
+                        <label>
+                            <input type="radio" name="looking_for" value="residential" required> Residential
                         </label>
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="radio" name="looking_for" value="other" class="check-input" required> Other
+                        <label>
+                            <input type="radio" name="looking_for" value="other" required> Other
                         </label>
                     </div>
                 </div>
                 
-                <div style="margin: 1rem 0; padding: 0.8rem; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600;">What's your budget?</label>
+                <div class="form-group">
+                    <label>What's your budget?</label>
                     <input type="range" name="amount" class="form-range" min="0" max="1000" step="50" value="500">
                     <div style="text-align: center; margin-top: 0.5rem;">
                         <span style="color: #6b7280; font-weight: 600; font-size: 1.1rem;">$<span id="amountValue">500</span></span>
@@ -78,12 +78,12 @@
                     </script>
                 </div>
                 
-                <div style="margin: 0.8rem 0;">
+                <div class="form-group">
                     <textarea name="desc" class="form-control" placeholder="Tell us about your business or activity (e.g., clothing store, barbershop, office space, etc.)" rows="3"></textarea>
                 </div>
             <% } %>
             
-            <div style="margin: 1.5rem 0;">
+            <div class="form-group">
                 <input type="submit" class="btn btn-register" value="Create Account">
             </div>
         </form>

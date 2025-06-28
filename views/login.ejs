@@ -10,11 +10,11 @@
     
     <div class="login-content">
 
-        <form action="/login" method="POST" class="log" style="width: 100%; max-width: 400px;">
+        <form action="/login" method="POST" class="log">
             <h3>Sign In</h3>
-            <p class="text-muted" style="margin-bottom: 1rem;">Enter your credentials to access your account</p>
+            <p class="text-muted">Enter your credentials to access your account</p>
             
-            <div style="margin: 1rem 0;">
+            <div class="form-group">
                 <select name="role" id="function" class="form-select" required>
                     <option value="">Select your role*</option>
                     <option value="landlord">🏠 Landlord</option>
@@ -22,15 +22,15 @@
                 </select>
             </div>
 
-            <div style="margin: 0.8rem 0;">
+            <div class="form-group">
                 <input type="text" name="email" class="form-control" placeholder="Enter your email address*" required>
             </div>
             
-            <div style="margin: 0.8rem 0;">
+            <div class="form-group">
                 <input type="password" name="password_hash" class="form-control" placeholder="Enter your password*" autocomplete="off" required>
             </div>
             
-            <div style="margin: 1.5rem 0;">
+            <div class="form-group">
                 <input type="submit" class="btn btn-login" value="Sign In">
             </div>
         </form>
