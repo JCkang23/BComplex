@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <title>Dashboard</title>
+</head>
+<body>
+    <%- include ('../partials/navbar.ejs') %>
+
+    <div class="content">
+        <h1>Welcome, <%= landlordName %> </h1>
+        <p>Track your commercial rooms and tenants.</p>
+
+        <div class="dashboard-layout">
+            <div class="card tenants-card">
+                <h2>Tenants</h2>
+                <div class="tenants-info-box">
+                    <p class="number"> <%= tenantsCount || 0 %> </p>
+                    <p class="status">Active</p>
+                </div>
+            </div>
+
+            <div class="card payments-card">
+                <h2>Revenue</h2>
+                <p>$<span> <%= totalPayments || 0 %> </span></p>
+            </div>
+
+            <div class="card contact-landlord">
+                <h2>Contact Renter</h2>
+                <textarea placeholder="Enter your message"></textarea>
+                <button>Send</button>
+            </div>
+
+            <div class="contracts-section">
+                <h2>Contracts</h2>
+                <table class="contracts-table">
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Contract Period</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (contracts && contracts.length > 0) { %>
+                            <% contracts.forEach(contract => { %>
+                                <tr class="contract-row">
+                                    <td>
+                                        <div class="contract-tenant">
+                                            <img src="<%= contract.avatar %>" alt="profile"/>
+                                            <span class="name"><%= contract.tenant_name %></span>
+                                        </div>
+                                    </td>
+                                    <td class="date"> <%= contract.start_date ? new Date(contract.start_date).toDateString() : '' %> →  <%= contract.end_date ? new Date(contract.end_date).toDateString() : '' %></td>
+                                    <td><span class="status active"><%= contract.status %></span></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="3">No contracts found.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="payments-section">
+                <h2>Payments</h2>
+                <table class="payments-table">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Room</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="payment-row">
+                            <td class="amount">$1,200.00</td>
+                            <td class="room">Room 308</td>
+                            <td class="date">Mar. 1</td>
+                        </tr>
+                        <tr class="payment-row">
+                            <td class="amount">$1,300.00</td>
+                            <td class="room">Room 406</td>
+                            <td class="date">Feb. 26</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

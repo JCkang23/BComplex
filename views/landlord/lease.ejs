@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <title>Lease</title>
+</head>
+<body>
+    <%- include ('../partials/navbar.ejs') %>
+
+    <div class="content">
+        <h1>Lease Management</h1>
+        <p>Manage your rental spaces and tenant contracts.</p>
+
+        <div class="dashboard-layout lease-layout">
+            <!-- Renters Section -->
+            <div class="contracts-section">
+                <h2>Your Renters</h2>
+                <table class="contracts-table">
+                    <thead>
+                        <tr>
+                            <th>Renter ID</th>
+                            <th>Room ID</th>
+                            <th>Details</th>
+                            <th>Value</th>
+                            <th>Contract Start</th>
+                            <th>Contract End</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof renterRoomsTable !== 'undefined' && renterRoomsTable.length > 0) { %>
+                            <% renterRoomsTable.forEach(renterRoom => { %>
+                                <tr class="contract-row">
+                                    <td><%= renterRoom.renter_id %></td>
+                                    <td><%= renterRoom.room_id %></td>
+                                    <td><%= renterRoom.renter_details %></td>
+                                    <td>$<%= renterRoom.renter_value %></td>
+                                    <td class="date"><%= new Date(renterRoom.renter_contract_start).toISOString().slice(0,10) %></td>
+                                    <td class="date"><%= new Date(renterRoom.renter_contract_end).toISOString().slice(0,10) %></td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr class="contract-row">
+                                <td colspan="6" style="text-align: center; color: #8b949e; padding: 20px;">No renters available</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+                <div class="buttons">
+                    <button id="addNewRenterForm" class="btn-primary">Add a Renter</button>
+                </div>
+            </div>
+
+            <!-- Rooms Section -->
+            <div class="payments-section">
+                <h2>Rental Spaces</h2>
+                <table class="contracts-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Details</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Availability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof roomsTable !== 'undefined' && roomsTable.length > 0) { %>
+                            <% roomsTable.forEach(room => { %>
+                                <tr class="contract-row">
+                                    <td><%= room.title %></td>
+                                    <td><%= room.room_details %></td>
+                                    <td><%= room.room_type %></td>
+                                    <td>$<%= room.room_price %></td>
+                                    <td><span class="status <%= room.is_available ? 'active' : 'paid' %>"><%= room.is_available ? 'Available' : 'Occupied' %></span></td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr class="contract-row">
+                                <td colspan="5" style="text-align: center; color: #8b949e; padding: 20px;">No rooms available</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+                <div class="buttons">
+                    <button id="addNewRoomForm" class="btn-primary">Add a Room</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add a Renter Modal -->
+        <div id="addARenter" class="modal-overlay" style="display: none;">
+            <div class="modal-box">
+                <span id="closeRenterModal" class="close-btn">&times;</span>
+                <h3>Add a Renter</h3>
+                <div class="modal-section">
+                    <h4>Existing Renters</h4>
+                    <div class="renterTable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Preference</th>
+                                    <th>Budget</th>
+                                    <th>Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof tenantsTable !== 'undefined' && tenantsTable.length > 0) { %>
+                                    <% tenantsTable.forEach(tenant => { %>
+                                        <tr>
+                                            <td><%= tenant.full_name %></td>
+                                            <td><%= tenant.preference %></td>
+                                            <td><%= tenant.budget %></td>
+                                            <td><%= tenant.activity_desc %></td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4">No renters available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <form action="/newRenter" method="POST" class="modal-form">
+                    <h4>Add Manually</h4>
+                    <div class="form-row">
+                        <select name="newRenterName" id="renterSelect" required>
+                            <option value="">Select Renter</option>
+                            <% if (typeof tenantsTable !== 'undefined' && tenantsTable.length > 0) { %>
+                                <% tenantsTable.forEach(tenant => { %>
+                                    <option value="<%= tenant.full_name %>"><%= tenant.full_name %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                        <select name="newRenterRoom" id="roomSelect" required>
+                            <option value="">Select Room</option>
+                            <!-- Available rooms will be loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="newRenterActivity" id="activityInput" placeholder="Activity Description" required>
+                        <input type="text" name="newRenterValue" id="rentValueInput" placeholder="Rent Value" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="date" name="newRenterContractS" required>
+                        <input type="date" name="newRenterContractE" required>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">+ Add New Renter</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add a Room Modal -->
+        <div id="addARoom" class="modal-overlay" style="display: none;">
+            <div class="modal-box">
+                <span id="closeRoomModal" class="close-btn">&times;</span>
+                <h3>Add a Room</h3>
+                <form action="/newRoom" method="POST" class="modal-form">
+                    <div class="form-row">
+                        <input type="text" name="newRoomName" placeholder="Room Name" required>
+                        <input type="text" name="newRoomLocation" placeholder="Room Location">
+                    </div>
+                    <textarea name="newPropertyDetails" placeholder="Room Details (e.g. location, type)" rows="2" required></textarea>
+                    <div class="form-row radio-group">
+                        <label><input type="radio" name="roomType" value="commercial" required> Commercial</label>
+                        <label><input type="radio" name="roomType" value="residential" required> Residential</label>
+                        <label><input type="radio" name="roomType" value="other" required> Other</label>
+                    </div>
+                    <input type="text" name="newRoomValue" placeholder="Rent Value" required>
+                    <button type="submit" class="btn-primary full-width">+ Add New Room</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Renter form functionality
+    document.getElementById('addNewRenterForm').onclick = function() {
+        document.getElementById('addARenter').style.display = 'flex';
+        loadAvailableRooms(); // Load available rooms when modal opens
+    };
+    document.getElementById('closeRenterModal').onclick = function() {
+        document.getElementById('addARenter').style.display = 'none';
+    };
+    
+    // Room form functionality
+    document.getElementById('addNewRoomForm').onclick = function() {
+        document.getElementById('addARoom').style.display = 'flex';
+    };
+    document.getElementById('closeRoomModal').onclick = function() {
+        document.getElementById('addARoom').style.display = 'none';
+    };
+    
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('addARenter')) {
+            document.getElementById('addARenter').style.display = 'none';
+        }
+        if (event.target == document.getElementById('addARoom')) {
+            document.getElementById('addARoom').style.display = 'none';
+        }
+    };
+
+    // Load available rooms for dropdown
+    async function loadAvailableRooms() {
+        try {
+            const response = await fetch('/api/available-rooms');
+            const rooms = await response.json();
+            const roomSelect = document.getElementById('roomSelect');
+            
+            // Clear existing options except the first one
+            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            
+            // Add available rooms
+            rooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.title;
+                option.textContent = `${room.title} - $${room.room_price}`;
+                option.dataset.price = room.room_price;
+                roomSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading available rooms:', error);
+        }
+    }
+
+    // Handle renter selection to autofill details
+    document.getElementById('renterSelect').addEventListener('change', async function() {
+        const selectedRenter = this.value;
+        if (selectedRenter) {
+            try {
+                const response = await fetch(`/api/renter-details/${encodeURIComponent(selectedRenter)}`);
+                const renterDetails = await response.json();
+                
+                // Autofill activity and rent value
+                document.getElementById('activityInput').value = renterDetails.activity_desc || '';
+                document.getElementById('rentValueInput').value = renterDetails.budget || '';
+            } catch (error) {
+                console.error('Error loading renter details:', error);
+            }
+        } else {
+            // Clear fields if no renter selected
+            document.getElementById('activityInput').value = '';
+            document.getElementById('rentValueInput').value = '';
+        }
+    });
+
+    // Handle room selection to update rent value if room price is different
+    document.getElementById('roomSelect').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const roomPrice = selectedOption.dataset.price;
+        const currentRentValue = document.getElementById('rentValueInput').value;
+        
+        // If rent value is empty or matches the previous room's price, update it
+        if (!currentRentValue || currentRentValue === this.dataset.lastPrice) {
+            document.getElementById('rentValueInput').value = roomPrice || '';
+        }
+        
+        // Store the current room's price for future comparison
+        this.dataset.lastPrice = roomPrice;
+    });
+</script>

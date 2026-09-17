@@ -1,0 +1,59 @@
+/* Dark Theme Colors from Second Image */
+:root {
+    --bg: #0d1117; --card: #161b22; --text: #f0f6fc; --accent: #434c5b; --muted: #8b949e; --button-bg: #364438;
+}
+body {
+    margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text);
+}
+
+/* Navbar */
+.navbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem; background-color: var(--card);
+}
+.logo {
+    font-size: 1.5rem; font-weight: bold;
+}
+.logo span {
+    color: var(--accent);
+}
+.nav-links {
+    list-style: none; display: flex; gap: 2rem;
+}
+.nav-links a {
+    color: var(--text); text-decoration: none;
+}
+.profile-icon img {
+    width: 32px; height: 32px; border-radius: 50%;
+}
+
+/* Layout */
+.container {
+    padding: 2rem; max-width: 1200px; margin: 0 auto;
+}
+.subtitle {
+    color: var(--muted); margin-bottom: 2rem;
+}
+.dashboard-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;
+}
+.card {
+    background-color: var(--card); padding: 1.5rem; border-radius: 12px; box-shadow: 0 0 10px #00000040;
+}
+.room-card .room-number {
+    font-size: 1.75rem; font-weight: bold; margin: 0.5rem 0;
+}
+.balance-card .amount {
+    font-size: 2rem; margin: 0.5rem 0;
+}
+.pay-btn {
+    margin-top: 1rem; background-color: var(--button-bg);
+    border: none; padding: 0.5rem 1rem; color: white;
+    font-weight: bold; border-radius: 8px; cursor: pointer;
+}
+.full-width {
+    grid-column: 1 / -1;
+}
+.payment-entry {
+    display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #2e2e2e;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <title>Payments</title>
+</head>
+<body>
+    <%- include ('../partials/navbar.ejs') %>
+
+    <div class="payments-container">
+        <h2>Payments</h2>
+        <table class="payments-table" id="paymentsTable">
+            <thead>
+                <tr>
+                    <th>Tenant</th>
+                    <th onclick="sortTable(1)">Amount ↑↓</th>
+                    <th onclick="sortTable(2)">Date ↑↓</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% payments.forEach(payment => { %>
+                    <tr>
+                    <td class="tenant-cell">
+                        <img src="<%= payment.photo %>" class="profile-pic" alt="">
+                        <span><%= payment.tenant %></span>
+                    </td>
+                    <td><%= `$${Number(payment.amount).toFixed(2)}` %></td>
+                    <td><%= payment.date %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    // Sort table function (column index 1 = Amount, 2 = Date)
+    function sortTable(columnIndex) {
+        const table = document.getElementById("paymentsTable");
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const isNumeric = columnIndex === 1;
+
+        const sortedRows = rows.sort((a, b) => {
+        const aText = a.children[columnIndex].textContent.replace(/[$,]/g, '');
+        const bText = b.children[columnIndex].textContent.replace(/[$,]/g, '');
+        return isNumeric
+            ? parseFloat(aText) - parseFloat(bText)
+            : new Date(`2024 ${aText}`) - new Date(`2024 ${bText}`);
+        });
+
+        // Clear and re-append sorted rows
+        tbody.innerHTML = "";
+        sortedRows.forEach(row => tbody.appendChild(row));
+    }
+    </script>

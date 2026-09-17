@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/portal.css" />
+    <title>Messages</title>
+</head>
+<body>
+    <%- include ('../partials/navbar.ejs') %>
+
+    <div class="messages-wrapper">
+        <div class="tenant-list">
+            <h4>Tenants</h4>
+            <ul>
+            <% tenants.forEach(t => { %>
+                <li class="<%= t.name === selectedTenant ? 'active' : '' %>">
+                <strong><%= t.name %></strong><br>
+                <small><%= t.agent %></small>
+                </li>
+            <% }) %>
+            </ul>
+        </div>
+
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h4><%= selectedTenant %></h4>
+                <small class="chat-date">Feb 24</small>
+            </div>
+
+            <div class="chat-messages">
+                <% messages.forEach(m => { %>
+                    <div class="chat-message <%= m.from === 'agent' ? 'from-agent' : 'from-tenant' %>">
+                    <img src="<%= m.avatar %>" class="chat-avatar" alt="">
+                    <div class="chat-bubble"><%= m.text %></div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div class="chat-input">
+                <input type="text" placeholder="Type a message..." />
+                <button>Send</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

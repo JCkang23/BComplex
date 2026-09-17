@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenant Dashboard</title>
+  <link rel="stylesheet" href="/styles/tDashboard.css">
+</head>
+<body>
+  <%- include ('../partials/tNav.ejs') %>
+
+  <main class="container">
+      <h1>Welcome, <%= renterName %></h1>
+      <p class="subtitle">Track your room and payments.</p>
+
+      <div class="dashboard-grid">
+        <!-- Room Info -->
+        <div class="card room-card">
+          <h2>Your Room</h2>
+          <div class="room-number">Room roomNumber </div>
+          <p> leaseStart - leaseEnd </p>
+        </div>
+
+        <!-- Balance -->
+        <div class="card balance-card">
+          <h2>Balance</h2>
+          <div class="amount">$ balanceAmount </div>
+          <button class="pay-btn">Pay</button>
+        </div>
+
+        <!-- Payment History -->
+        <div class="card full-width">
+          <h2>Payment History</h2>
+          <div class="payment-row" >
+            paymentHistory.forEach(payment => {
+              <div class="payment-entry">
+                <div>$ payment.amount </div>
+                <div> payment.date </div>
+              </div>
+            })
+          </div>
+        </div>
+      </div>
+    </main>
+
+</body>
+</html>

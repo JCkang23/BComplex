@@ -6,7 +6,7 @@
         <h2><%= landlordName %> Dashboard</h2>
 
         <div class="flex-square">
-            <!-- Top Left: Renters -->
+            <!-- Renters -->
             <div class="carre-item tenants">
                 <h4>Your Renters</h4>
 
@@ -43,10 +43,14 @@
                     </table>
                 </div>
 
-                <button id="addNewRenterForm">Add a Renter</button>
+                <div class="buttons">
+                    <button id="viewMoreRenters">View More</button>
+                    <button id="addNewRenterForm">Add a Renter</button>
+                </div>
+                
             </div>
 
-            <!-- Top Right: Rooms -->
+            <!-- Rooms -->
             <div class="carre-item properties">
                 <h4>Rental Spaces</h4>
 
@@ -81,10 +85,13 @@
                     </table>
                 </div>
 
-                <button id="addNewRoomForm">Add a Room</button>
+                <div class="buttons">
+                    <button id="viewMoreRooms">View More</button>
+                    <button id="addNewRoomForm">Add a Room</button>
+                </div>
             </div>
 
-            <!-- Bottom Left: Payments -->
+            <!-- Payments -->
             <div class="carre-item payments">
                 <h4>Financial Management</h4>
                 <form action="/payment" method="GET">
@@ -95,7 +102,7 @@
                 </form>
             </div>
 
-            <!-- Bottom Right: Chat -->
+            <!-- Chat -->
             <div class="carre-item chat">
                 <h4>Communication</h4>
                 <form action="/chats">
@@ -106,7 +113,8 @@
             </div>
         </div>
 
-        <!-- Renter Modal -->
+        <!-- Add a Renter Form/Button functionality-->
+
         <div id="addARenter" class="modal-overlay" style="display: none;">
             <div class="form-content">
                 <span id="closeRenterModal" class="close-btn">&times;</span>
@@ -120,7 +128,6 @@
                                 <th>Preference</th>
                                 <th>Budget</th>
                                 <th>Activity Description</th>
-                                <th>Match</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -131,12 +138,11 @@
                                         <td><%= tenant.preference %></td>
                                         <td><%= tenant.budget %></td>
                                         <td><%= tenant.activity_desc %></td>
-                                        <td><button id="addRenterForm">Add</button></td>
                                     </tr>
                                 <% }); %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="5">No renters available</td>
+                                    <td colspan="4">No renters available</td>
                                 </tr>
                             <% } %>
                         </tbody>
@@ -156,7 +162,46 @@
             </div>
         </div>
 
-        <!-- Room Modal -->
+        <!-- View more renters functionality -->
+
+        <div id="viewTable" class="modal-overlay" style="display: none;">
+            <div class="form-content">
+                <span id="closeViewModal" class="close-btn">&times;</span>
+
+                <h4>Your Renters</h4>
+                <div class="renterTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Preference</th>
+                                <th>Budget</th>
+                                <th>Activity Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof rentersRooms !== 'undefined' && rentersRooms.length > 0) { %>
+                                <% tenantsTable.forEach(tenant => { %>
+                                    <tr>
+                                        <td><%= rentersRooms.full_name %></td>
+                                        <td><%= rentersRooms.preference %></td>
+                                        <td><%= rentersRooms.budget %></td>
+                                        <td><%= rentersRooms.activity_desc %></td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4">No renters available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add a Room Form/Button functionality -->
+
         <div id="addARoom" class="modal-overlay" style="display: none;">
             <div class="form-content">
                 <span id="closeRoomModal" class="close-btn">&times;</span>
@@ -176,6 +221,45 @@
                 </form>
             </div>
         </div>
+
+        <!-- View More rental space functionality-->
+        <div id="viewRoomsTable" class="modal-overlay" style="display: none;">
+            <div class="form-content">
+                <span id="closeRentalModal" class="close-btn">&times;</span>
+
+                <h4>Your Rooms</h4>
+                <div class="roomTable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Details</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Availability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof roomsTable !== 'undefined' && roomsTable.length > 0) { %>
+                                <% roomsTable.forEach(room => { %>
+                                    <tr>
+                                        <td><%= room.title %></td>
+                                        <td><%= room.room_details %></td>
+                                        <td><%= room.room_type %></td>
+                                        <td><%= room.room_price %></td>
+                                        <td><%= room.is_available ? 'Available' : 'Occupied' %></td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5">No rooms available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -186,6 +270,14 @@
     document.getElementById('closeRenterModal').onclick = function() {
         document.getElementById('addARenter').style.display = 'none';
     };
+    // View more renters functionality
+    document.getElementById('viewMoreRenters').onclick = function() {
+        document.getElementById('viewTable').style.display = 'flex';
+    };
+    document.getElementById('closeViewModal').onclick = function() {
+        document.getElementById('viewTable').style.display = 'none';
+    };
+
     // Room form functionality
     document.getElementById('addNewRoomForm').onclick = function() {
         document.getElementById('addARoom').style.display = 'flex';
@@ -193,6 +285,15 @@
     document.getElementById('closeRoomModal').onclick = function() {
         document.getElementById('addARoom').style.display = 'none';
     };
+
+    // View more rooms
+    document.getElementById('viewMoreRooms').onclick = function() {
+        document.getElementById('viewRoomsTable').style.display = 'flex';
+    };
+    document.getElementById('closeRentalModal').onclick = function() {
+        document.getElementById('viewRoomsTable').style.display = 'none';
+    };
+
     // Close modals when clicking outside
     window.onclick = function(event) {
         if (event.target == document.getElementById('addARenter')) {
@@ -202,4 +303,59 @@
             document.getElementById('addARoom').style.display = 'none';
         }
     };
+
+//     // Pagination functionality for tables
+//     document.addEventListener('DOMContentLoaded', function() {
+//         // Handle renter table pagination
+//         const renterTable = document.querySelector('.renterTable table');
+//         const renterRows = renterTable.querySelectorAll('tbody tr');
+//         const renterViewMoreBtn = renterTable.querySelector('tfoot button');
+        
+//         if (renterRows.length > 3) {
+//             // Hide rows beyond the first 4
+//             for (let i = 3; i < renterRows.length; i++) {
+//                 renterRows[i].style.display = 'none';
+//             }
+            
+//             // Show the view more button
+//             renterViewMoreBtn.style.display = 'inline-block';
+            
+//             // Add click handler for view more
+//             renterViewMoreBtn.onclick = function() {
+//                 for (let i = 3; i < renterRows.length; i++) {
+//                     renterRows[i].style.display = 'table-row';
+//                 }
+//                 renterViewMoreBtn.style.display = 'none';
+//             };
+//         } else {
+//             // Hide the view more button if 4 or fewer rows
+//             renterViewMoreBtn.style.display = 'none';
+//         }
+
+//         // Handle room table pagination
+//         const roomTable = document.querySelector('.roomTable table');
+//         const roomRows = roomTable.querySelectorAll('tbody tr');
+//         const roomViewMoreBtn = roomTable.querySelector('tfoot button');
+        
+//         if (roomRows.length > 3) {
+//             // Hide rows beyond the first 4
+//             for (let i = 3; i < roomRows.length; i++) {
+//                 roomRows[i].style.display = 'none';
+//             }
+            
+//             // Show the view more button
+//             roomViewMoreBtn.style.display = 'inline-block';
+            
+//             // Add click handler for view more
+//             roomViewMoreBtn.onclick = function() {
+//                 for (let i = 3; i < roomRows.length; i++) {
+//                     roomRows[i].style.display = 'table-row';
+//                 }
+//                 roomViewMoreBtn.style.display = 'none';
+//             };
+//         } else {
+//             // Hide the view more button if 4 or fewer rows
+//             roomViewMoreBtn.style.display = 'none';
+//         }
+//     });
 </script>

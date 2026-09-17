@@ -1,0 +1,44 @@
+<nav class="navbar">
+    <div class="logo">RentSpace</div>
+    <ul class="nav-links">
+        <li><a href="/tDashboard" class="active">Dashboard</a></li>
+        <li><a href="/tLease">Lease</a></li>
+        <li><a href="/tPayments">Payments</a></li>
+        <li><a href="/tMessages">Messages</a></li>
+    </ul>
+    <div class="profile">
+        <button class="profile-button" onclick="toggleProfileMenu()">
+            <div class="profile-icon">👤</div>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+            <a href="/profile" class="dropdown-item">
+                <span class="dropdown-icon">⚙️</span>
+                Profile Settings
+            </a>
+            <a href="/account" class="dropdown-item">
+                <span class="dropdown-icon">🔐</span>
+                Account
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="/logout" class="dropdown-item">
+                <span class="dropdown-icon">🚪</span>
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleProfileMenu() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('show');
+}
+document.addEventListener('click', function(event) {
+    const profile = document.querySelector('.profile');
+    const dropdown = document.getElementById('profileDropdown');
+    
+    if (!profile.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+</script>

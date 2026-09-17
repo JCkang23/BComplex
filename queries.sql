@@ -69,6 +69,16 @@ CREATE TABLE payments (
   paid_at TIMESTAMP
 );
 
+-- Request Feature
+CREATE TABLE pairing_requests (
+  id SERIAL PRIMARY KEY,
+  landlord_id INT REFERENCES landlords(id),
+  renter_id INT REFERENCES renters(id),
+  status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, declined
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- MESSAGES table (for chat)
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,

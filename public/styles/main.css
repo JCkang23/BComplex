@@ -576,6 +576,11 @@ input[type="range"]::-webkit-slider-thumb {
     background: rgba(100, 116, 139, 0.05);
 }
 
+.buttons {
+    display: flex; justify-content: center; align-items: center;
+    gap: 10px; width: 100%;
+}
+
 /* Enhanced modal styling */
 .modal-overlay {
     position: fixed;
@@ -724,4 +729,307 @@ input[type="range"]::-webkit-slider-thumb {
 
 .radio-group label:hover {
     color: #64748b;
+}
+
+/* RentSpace Dashboard Styles */
+
+body, html {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f7fafd;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+.dashboard-container {
+  max-width: 1100px;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  padding: 32px 36px 36px 36px;
+}
+
+.dashboard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5eaf1;
+  margin-bottom: 32px;
+}
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: -1px;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-links li {
+  font-size: 1.08rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border 0.2s;
+}
+.nav-links li.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+}
+.user-menu {
+  width: 36px;
+  height: 36px;
+  background: #e0e7ef;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-icon {
+  width: 22px;
+  height: 22px;
+  background: #b6c3d6;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dashboard-main {
+  margin-top: 24px;
+}
+
+.welcome-section h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2em;
+}
+.welcome-section p {
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 36px;
+}
+.card {
+  background: #f1f6fd;
+  border-radius: 14px;
+  padding: 28px 32px 22px 32px;
+  min-width: 220px;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.card-title {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+.card-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 6px;
+}
+.card-status.active {
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.98rem;
+  padding: 2px 14px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+.section-header .view-all {
+  color: #2563eb;
+  font-size: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.contracts-list, .payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.contract-card, .payment-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(37,99,235,0.06);
+  display: flex;
+  align-items: center;
+  padding: 18px 22px;
+  gap: 18px;
+}
+.contract-avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5eaf1;
+}
+.contract-info {
+  flex: 1;
+}
+.contract-room {
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 1.08rem;
+}
+.contract-tenant {
+  font-size: 1.05rem;
+  color: #222;
+  margin-bottom: 2px;
+}
+.contract-dates {
+  color: #6b7280;
+  font-size: 0.98rem;
+}
+.contract-status {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 4px 14px;
+  border-radius: 8px;
+  background: #e5f6ee;
+  color: #1a7f37;
+  margin-left: 12px;
+}
+.contract-status.active {
+  background: #e5f6ee;
+  color: #1a7f37;
+}
+.contract-status.paid {
+  background: #e5f6ee;
+  color: #1a7f37;
+}
+
+.payment-card {
+  justify-content: space-between;
+}
+.payment-amount {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #222;
+}
+.payment-room {
+  color: #2563eb;
+  font-weight: 500;
+}
+.payment-date {
+  color: #6b7280;
+  font-size: 0.98rem;
+}
+.payment-status.paid {
+  background: #e5f6ee;
+  color: #1a7f37;
+  font-size: 0.98rem;
+  padding: 2px 14px;
+  border-radius: 8px;
+}
+
+.empty-state {
+  color: #b6c3d6;
+  font-size: 1.08rem;
+  padding: 18px 0;
+  text-align: center;
+}
+
+.contact-section {
+  background: #f1f6fd;
+  border-radius: 14px;
+  padding: 28px 32px 22px 32px;
+  margin-top: 18px;
+  max-width: 420px;
+}
+.contact-section h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.contact-form textarea {
+  border-radius: 8px;
+  border: 1px solid #e5eaf1;
+  padding: 12px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+.send-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.send-btn:hover {
+  background: #174bbd;
+}
+
+@media (max-width: 900px) {
+  .dashboard-container {
+    padding: 18px 6vw;
+  }
+  .summary-cards {
+    flex-direction: column;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-container {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .dashboard-nav {
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+  .summary-cards, .contracts-list, .payments-list {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .contract-card, .payment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .contact-section {
+    padding: 18px 10px;
+    max-width: 100%;
+  }
 }

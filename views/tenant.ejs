@@ -1,46 +1,400 @@
+<%- include ('partials/header.ejs') %>
 
-<div class="container">
-    <h2><%= renterName %> Dashboard</h2>
-    
-    <div class="details" style="display: flex;">
-        <div class="det1">
-            <form action="">
-                <label for="">Room:</label>
-                <input type="text" name="" placeholder="Room" class="form-control">
-                <br><label for="">Monthy:</label>
-                <input type="text" name="" placeholder="$xxx" class="form-control">
-                <br><label for="">Status:</label>
-                <input type="datetime" name="detailStatus" placeholder="[current date (month + year)]" class="form-control">
-                <input type="text" name="detailStatus" placeholder="[paid/due]" class="form-control">
+<link rel="stylesheet" href="/styles/main.css">
+
+<style>
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #e3e8f7 0%, #b8c1ec 100%) !important;
+        background-attachment: fixed !important;
+        position: relative;
+        overflow-x: hidden;
+    }
+    .floating-elements {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .floating-element {
+        position: absolute;
+        background: rgba(184,193,236,0.10);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+    .floating-element:nth-child(1) {
+        width: 180px; height: 180px; top: 8%; left: 8%; animation-delay: 0s;
+    }
+    .floating-element:nth-child(2) {
+        width: 120px; height: 120px; top: 18%; right: 10%; animation-delay: 2s;
+    }
+    .floating-element:nth-child(3) {
+        width: 90px; height: 90px; bottom: 12%; left: 18%; animation-delay: 4s;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(180deg); }
+    }
+    .tenant-full-container {
+        min-height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0;
+        z-index: 1;
+    }
+    .tenant-header {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: left;
+        padding: 2.5rem 2rem 1.5rem 2rem;
+        color: #232946;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+    .tenant-header-title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .tenant-header h2 {
+        font-size: 2.7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, #6b7fd7, #393e5c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        padding: 0;
+    }
+    .tenant-header .tenant-name {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #232946;
+        text-shadow: 0 1px 4px rgba(184,193,236,0.10);
+        margin-right: 0.7rem;
+    }
+    .tenant-header .tenant-status-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 60%, #b8c1ec 100%);
+        color: #232946;
+        font-size: 1.02rem;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 0.22rem 1.1rem;
+        margin-left: 0.1rem;
+        box-shadow: 0 1px 4px rgba(16, 185, 129, 0.10);
+        letter-spacing: 0.5px;
+        vertical-align: middle;
+    }
+    .tenant-header .tenant-profile-img-header {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #b8c1ec 60%, #6b7fd7 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #232946;
+        font-size: 2.1rem;
+        font-weight: 700;
+        box-shadow: 0 4px 16px rgba(184, 193, 236, 0.10);
+        border: 3px solid #eebbc3;
+        flex-shrink: 0;
+    }
+    .tenant-header p {
+        font-size: 1.2rem;
+        color: #393e5c;
+        font-weight: 400;
+        margin: 0;
+    }
+    .tenant-dashboard-grid {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.2rem;
+        padding: 0 2rem 2.2rem 2rem;
+    }
+    .tenant-card {
+        background: rgba(232, 236, 250, 0.93);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(107, 119, 180, 0.10);
+        padding: 1.7rem 1.5rem 1.3rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        position: relative;
+        z-index: 1;
+        color: #232946;
+    }
+    .tenant-card h3, .tenant-card h4, .tenant-card label {
+        color: #232946;
+        text-shadow: 0 1px 4px rgba(184,193,236,0.10);
+    }
+    .tenant-card h3 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+    .tenant-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+    .tenant-info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.05rem;
+    }
+    .tenant-info-row label {
+        color: #6b7fd7;
+        font-weight: 500;
+        min-width: 70px;
+        font-size: 1.01rem;
+    }
+    .tenant-info-row .status-badge {
+        background: linear-gradient(135deg, #b8c1ec 60%, #eebbc3 100%);
+        color: #232946;
+        border-radius: 8px;
+        padding: 0.13rem 0.7rem;
+        font-size: 0.97rem;
+        font-weight: 600;
+        margin-left: 0.4rem;
+        box-shadow: 0 1px 4px rgba(184,193,236,0.10);
+    }
+    .tenant-info-row .status-date {
+        color: #eebbc3;
+        font-size: 0.97rem;
+        margin-left: 0.4rem;
+    }
+    .tenant-contract-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+    .tenant-contract-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.05rem;
+    }
+    .tenant-contract-row label {
+        color: #6b7fd7;
+        font-weight: 500;
+        min-width: 70px;
+        font-size: 1.01rem;
+    }
+    .tenant-contract-row .status-badge {
+        background: linear-gradient(135deg, #b8c1ec 60%, #10b981 100%);
+        color: #232946;
+        border-radius: 8px;
+        padding: 0.13rem 0.7rem;
+        font-size: 0.97rem;
+        font-weight: 600;
+        margin-left: 0.4rem;
+        box-shadow: 0 1px 4px rgba(184,193,236,0.10);
+    }
+    .tenant-contract-row .exp-date {
+        color: #eebbc3;
+        font-size: 0.97rem;
+        margin-left: 0.4rem;
+    }
+    .tenant-renew-btn {
+        align-self: center;
+        margin-top: 0.2rem;
+        background: linear-gradient(90deg, #b8c1ec 0%, #10b981 100%);
+        color: #232946;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.3rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.13);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .tenant-renew-btn:hover {
+        background: linear-gradient(90deg, #10b981 0%, #b8c1ec 100%);
+        color: #232946;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.18);
+    }
+    .tenant-renew-btn .renew-icon {
+        font-size: 1.1em;
+        margin-right: 0.2em;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .tenant-actions-row {
+        width: 100%;
+        display: flex;
+        gap: 0.7rem;
+        justify-content: center;
+        margin-top: 1.1rem;
+    }
+    .tenant-action-btn {
+        flex: 1 1 0;
+        background: linear-gradient(135deg, #b8c1ec 60%, #6b7fd7 100%);
+        color: #232946;
+        border: none;
+        border-radius: 10px;
+        padding: 1rem 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(107, 119, 180, 0.10);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        text-align: center;
+    }
+    .tenant-action-btn:hover {
+        background: linear-gradient(135deg, #6b7fd7 60%, #b8c1ec 100%);
+        color: #232946;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(107, 119, 180, 0.18);
+    }
+    .tenant-card .card-desc {
+        color: #232946;
+        font-size: 1.08rem;
+        font-weight: 400;
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
+        text-shadow: 0 1px 4px rgba(184,193,236,0.10);
+    }
+    @media (max-width: 900px) {
+        .tenant-dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 0 1rem 2rem 1rem;
+        }
+        .tenant-header, .tenant-dashboard-grid {
+            max-width: 100vw;
+        }
+        .tenant-header-title-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .tenant-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.2rem;
+        }
+        .tenant-header .tenant-profile-img-header {
+            align-self: flex-end;
+        }
+    }
+    @media (max-width: 600px) {
+        .tenant-header {
+            padding: 1.5rem 0.7rem 1rem 0.7rem;
+        }
+        .tenant-dashboard-grid {
+            padding: 0 0.2rem 1.2rem 0.2rem;
+            gap: 1rem;
+        }
+        .tenant-card {
+            padding: 1.1rem 0.7rem 1rem 0.7rem;
+        }
+        .tenant-actions-row {
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        .tenant-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.2rem;
+        }
+        .tenant-header .tenant-profile-img-header {
+            align-self: flex-end;
+        }
+    }
+</style>
+
+<div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+</div>
+
+<div class="tenant-full-container">
+    <div class="tenant-header">
+        <div>
+            <div class="tenant-header-title-row">
+                <h2>Renter dashboard</h2>
+                <span class="tenant-status-badge">Active Tenant</span>
+            </div>
+            <p>Welcome <%= renterName %>, good to see you!</p>
+        </div>
+        <div class="tenant-profile-img-header">
+            <%= renterName.charAt(0).toUpperCase() %>
+        </div>
+    </div>
+    <div class="tenant-dashboard-grid">
+        <!-- Main Info Card -->
+        <div class="tenant-card">
+            <h3>Room Details</h3>
+            <div class="tenant-info-list">
+                <div class="tenant-info-row">
+                    <label>Room:</label>
+                    <span>101</span>
+                </div>
+                <div class="tenant-info-row">
+                    <label>Monthly:</label>
+                    <span>$1,200</span>
+                </div>
+                <div class="tenant-info-row">
+                    <label>Status:</label>
+                    <span class="status-badge">Paid</span>
+                    <span class="status-date">(May 2024)</span>
+                </div>
+            </div>
+        </div>
+        <!-- Contract Card -->
+        <div class="tenant-card">
+            <h3>Contract Information</h3>
+            <div class="tenant-contract-list">
+                <div class="tenant-contract-row">
+                    <label>Status:</label>
+                    <span class="status-badge">Active</span>
+                    <span class="exp-date">Exp: 2025-05-31</span>
+                </div>
+            </div>
+            <form action="/renewal" method="POST">
+                <button type="submit" name="renewal" class="tenant-renew-btn"><span class="renew-icon">🔄</span>Renew</button>
             </form>
+            <div class="tenant-actions-row">
+                <form action="/pay" style="flex:1;">
+                    <button type="submit" name="payRent" class="tenant-action-btn">Pay rent</button>
+                </form>
+                <form action="/renterChat" style="flex:1;">
+                    <button type="submit" name="renterChat" class="tenant-action-btn">Chat with landlord</button>
+                </form>
+            </div>
         </div>
-        <div class="det2">
-            <img src="" alt="profile">
+        <!-- New Card 1 -->
+        <div class="tenant-card">
+            <h3>Important Notices</h3>
+            <div class="card-desc">Any urgent or important information for the tenant will appear here. This could include maintenance schedules, policy updates, or other alerts.</div>
         </div>
-    </div>
-
-    <div class="info">
-        <strong>Contract Info</strong>
-        <form action="">
-            <label for="contractInfo">Contract</label><br>
-            <label for="fromDate">From</label>
-            <input type="datetime" name="date1" placeholder="[date ~ from xxx]" class="form-control">
-            <label for="toDate">To</label>
-            <input type="datetime" name="date2" placeholder="[date ~ to xxx]" class="form-control">
-            <br><label for="contractStatus">Status:</label>
-            <input type="text" name="contractStatus" placeholder="[active/expired]" class="form-control">
-        </form>
-        <form action="/renewal" method="POST">
-            <input type="submit" name="renewal" value="Renew">
-        </form>
-    </div>
-
-    <div class="actions" style="display: flex;">
-        <form action="/pay">
-            <input type="submit" name="payRent" value="Pay Rent">
-        </form>
-        <form action="/renterChat">
-            <input type="submit" name="renterChat" value="Chat With Landlord">
-        </form>
+        <!-- New Card 2 -->
+        <div class="tenant-card">
+            <h3>Documents & Resources</h3>
+            <div class="card-desc">Access your lease documents, payment receipts, and helpful resources here. This section can be expanded as needed.</div>
+        </div>
     </div>
 </div>
