@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import bodyParser from "body-parser";
 import env from "dotenv";
+import ejs from "ejs";
 import express from "express";
 import session from "express-session";
 import passport from "passport";
@@ -12,6 +13,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
+app.engine("ejs", ejs.renderFile);
 
 const saltRounds = 10;
 env.config();
