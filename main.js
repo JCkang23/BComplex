@@ -8,7 +8,11 @@ import { Strategy } from "passport-local";
 import pg from "pg";
 
 const app = express();
-const port = 4000;
+// const port = 4000;
+
+app.set("view engine", "ejs");
+app.set("views", "./views");
+
 const saltRounds = 10;
 env.config();
 
@@ -32,6 +36,7 @@ const db = new pg.Client({
     database: process.env.PG_DB2,
     password: process.env.PG_PSWD,
     port: process.env.PG_PORT,
+    ssl: { rejectUnauthorized: false },
 });
 
 db.connect();
@@ -644,6 +649,8 @@ app.post('/newRoom', async(req, res)=>{
 passport.serializeUser((user, cb) =>{ cb(null, user); });
 passport.deserializeUser((user, cb) =>{ cb(null, user); });
 
-app.listen(port, ()=>{
-    console.log(`Server running on http://localhost:${port}`);
-});
+// app.listen(port, ()=>{
+//     console.log(`Server running on http://localhost:${port}`);
+// });
+
+export default app;
