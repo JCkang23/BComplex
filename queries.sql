@@ -7,6 +7,7 @@ CREATE TABLE renters (
   preference VARCHAR(20),
   budget NUMERIC(10, 2) DEFAULT 0.00,
   activity_desc TEXT,
+  discoverable BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -32,6 +33,17 @@ CREATE TABLE rooms (
   landlord_id INTEGER REFERENCES landlords(id) ON DELETE SET NULL,
   renter_id INTEGER REFERENCES renters(id) ON DELETE SET NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Room names identify rooms in the lease form, so they must be unique per landlord.
+-- (Existing database? Check for duplicates first, then run this line once.)
+CREATE UNIQUE INDEX rooms_landlord_title_unique ON rooms (landlord_id, lower(title));
+
+-- Shared fixed-window counters for login and registration throttling.
+CREATE TABLE rate_limit_hits (
+  key TEXT PRIMARY KEY,
+  hits INTEGER NOT NULL,
+  reset_at TIMESTAMPTZ NOT NULL
 );
 
 -- RENTERS_ROOMS table

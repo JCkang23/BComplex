@@ -7,7 +7,7 @@
         <li><a href="/tMessages">Messages</a></li>
     </ul>
     <div class="profile">
-        <button class="profile-button" onclick="toggleProfileMenu()">
+        <button class="profile-button" type="button" aria-expanded="false" aria-controls="profileDropdown">
             <div class="profile-icon">👤</div>
         </button>
         <div class="profile-dropdown" id="profileDropdown">
@@ -20,25 +20,32 @@
                 Account
             </a>
             <div class="dropdown-divider"></div>
-            <a href="/logout" class="dropdown-item">
-                <span class="dropdown-icon">🚪</span>
-                Logout
-            </a>
+            <form action="/logout" method="POST" class="logout-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                <button type="submit" class="dropdown-item">
+                    <span class="dropdown-icon">🚪</span>
+                    Logout
+                </button>
+            </form>
         </div>
     </div>
 </nav>
 
-<script>
+<script nonce="<%= cspNonce %>">
+const profileButton = document.querySelector('.profile-button');
 function toggleProfileMenu() {
     const dropdown = document.getElementById('profileDropdown');
     dropdown.classList.toggle('show');
+    profileButton.setAttribute('aria-expanded', dropdown.classList.contains('show'));
 }
+profileButton.addEventListener('click', toggleProfileMenu);
 document.addEventListener('click', function(event) {
     const profile = document.querySelector('.profile');
     const dropdown = document.getElementById('profileDropdown');
     
     if (!profile.contains(event.target)) {
         dropdown.classList.remove('show');
+        profileButton.setAttribute('aria-expanded', 'false');
     }
 });
 </script>

@@ -126,6 +126,7 @@
                     </div>
                 </div>
                 <form action="/newRenter" method="POST" class="modal-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                     <h4>Add Manually</h4>
                     <div class="form-row">
                         <select name="newRenterName" id="renterSelect" required>
@@ -160,6 +161,7 @@
                 <span id="closeRoomModal" class="close-btn">&times;</span>
                 <h3>Add a Room</h3>
                 <form action="/newRoom" method="POST" class="modal-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                     <div class="form-row">
                         <input type="text" name="newRoomName" placeholder="Room Name" required>
                         <input type="text" name="newRoomLocation" placeholder="Room Location">
@@ -177,7 +179,7 @@
         </div>
     </div>
 
-<script>
+<script nonce="<%= cspNonce %>">
     // Renter form functionality
     document.getElementById('addNewRenterForm').onclick = function() {
         document.getElementById('addARenter').style.display = 'flex';

@@ -91,6 +91,12 @@ p {
     color: white;
 }
 
+/* Logout is a POST form now; make its button look like the other menu links. */
+.logout-form { margin: 0; }
+button.dropdown-item {
+    width: 100%; background: none; border: 0; cursor: pointer; font-family: inherit; text-align: left;
+}
+
 .dropdown-icon {
     font-size: 1rem; width: 16px; text-align: center;
 }

@@ -5,22 +5,29 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "start": "node main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
-    "body-parser": "^2.2.0",
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.1",
     "express-session": "^1.18.2",
+    "helmet": "^8.3.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.16.0"
+    "pg": "^8.16.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
+    "supertest": "^7.3.1",
+    "vitest": "^5.0.5"
   }
 }

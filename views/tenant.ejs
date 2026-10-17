@@ -375,6 +375,7 @@
                 </div>
             </div>
             <form action="/renewal" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                 <button type="submit" name="renewal" class="tenant-renew-btn"><span class="renew-icon">🔄</span>Renew</button>
             </form>
             <div class="tenant-actions-row">

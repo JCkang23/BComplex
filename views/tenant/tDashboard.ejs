@@ -13,6 +13,19 @@
       <h1>Welcome, <%= renterName %></h1>
       <p class="subtitle">Track your room and payments.</p>
 
+      <section class="card" aria-labelledby="discovery-heading">
+        <h2 id="discovery-heading">Profile discovery</h2>
+        <p>Choose whether landlords may find your profile. If enabled, landlords can see your name, space preference, budget, and activity description.</p>
+        <form action="/renter/discoverability" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+          <label>
+            <input type="checkbox" name="discoverable" <%= discoverable ? 'checked' : '' %>>
+            Allow landlords to discover my profile
+          </label>
+          <button type="submit">Save privacy setting</button>
+        </form>
+      </section>
+
       <div class="dashboard-grid">
         <!-- Room Info -->
         <div class="card room-card">

@@ -150,6 +150,7 @@
                 </div>
 
                 <form action="/newRenter" method="POST" class="newRenterForm">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                     <h4>Add a Renter Manually</h4>
                     <input type="text" name="newRenterName" placeholder="New Renter Name" required>
                     <input type="text" name="newRenterRoom" placeholder="Room to Rent" required>
@@ -206,6 +207,7 @@
             <div class="form-content">
                 <span id="closeRoomModal" class="close-btn">&times;</span>
                 <form action="/newRoom" method="POST" class="newRoomForm">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                     <h4>Create a Rental Space</h4>
                     <input type="text" name="newRoomName" placeholder="New Room Name" required>
                     <input type="text" name="newRoomLocation" placeholder="Room Location">

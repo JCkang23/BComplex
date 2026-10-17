@@ -9,6 +9,7 @@
     <div class="login-content">
 
         <form action="/login" method="POST" class="log">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
             <h3>Sign In</h3>
             <p class="text-muted">Enter your credentials to access your account</p>
             
@@ -21,11 +22,11 @@
             </div>
 
             <div class="form-group">
-                <input type="text" name="email" class="form-control" placeholder="Enter your email address*" style="text-transform: lowercase;" required>
+                <input type="email" name="email" class="form-control" placeholder="Enter your email address*" autocomplete="username" required>
             </div>
             
             <div class="form-group">
-                <input type="password" name="password_hash" class="form-control" placeholder="Enter your password*" autocomplete="off" required>
+                <input type="password" name="password" class="form-control" placeholder="Enter your password*" autocomplete="current-password" required>
             </div>
             
             <div class="form-group">

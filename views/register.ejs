@@ -9,11 +9,12 @@
     <div class="register-content">
         
         <form action="/register" method="POST" class="reg">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
             <h3><%= renter ? 'Register as a Renter' : 'Register as a Landlord' %></h3>
             <p class="text-muted">Please select your role to continue.</p>
             
             <div class="form-group">
-                <select name="role" class="form-select" onchange="window.location.href='/register?role=' + this.value;">
+                <select name="role" class="form-select" id="roleSelect">
                     <option value="" <%= !renter && !landlord ? 'selected' : '' %>>Select your role*</option>
                     <option value="landlord" <%= landlord ? 'selected' : '' %>>🏠 Landlord</option>
                     <option value="renter" <%= renter ? 'selected' : '' %>>🏢 Renter</option>
@@ -25,11 +26,11 @@
                     <input type="text" name="full_name" class="form-control" placeholder="Enter your full name*" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="email" class="form-control" placeholder="Enter your email address*" style="text-transform: lowercase;" required>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email address*" autocomplete="email" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password_hash" class="form-control" placeholder="Create a strong password*" minlength="8" maxlength="20" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" autocomplete="off" required>
-                    <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">Must contain uppercase, lowercase, number, and special character</small>
+                    <input type="password" name="password" class="form-control" placeholder="Create a strong password*" minlength="8" autocomplete="new-password" required>
+                    <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">At least 8 characters. A long passphrase beats a short complicated password.</small>
                 </div>
                 <div class="form-group">
                     <input type="number" name="rooms_owned" class="form-control" placeholder="Number of rooms you own*" min="1" max="50" required>
@@ -39,11 +40,11 @@
                     <input type="text" name="full_name" class="form-control" placeholder="Enter your full name*" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="email" class="form-control" placeholder="Enter your email address*" style="text-transform: lowercase;" required>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email address*" autocomplete="email" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password_hash" class="form-control" placeholder="Create a strong password*" minlength="8" maxlength="20" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" autocomplete="off" required>
-                    <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">Must contain uppercase, lowercase, number, and special character</small>
+                    <input type="password" name="password" class="form-control" placeholder="Create a strong password*" minlength="8" autocomplete="new-password" required>
+                    <small style="color: #525862; font-size: 0.8rem; margin-top: 0.3rem; display: block;">At least 8 characters. A long passphrase beats a short complicated password.</small>
                 </div>
                 
                 <div class="form-group">
@@ -67,7 +68,7 @@
                     <div style="text-align: center; margin-top: 0.5rem;">
                         <span style="color: #907070; font-weight: 600; font-size: 1.1rem;">$<span id="amountValue">500</span></span>
                     </div>
-                    <script>
+                    <script nonce="<%= cspNonce %>">
                         const amountInput = document.querySelector('input[name="amount"]');
                         const amountValue = document.getElementById('amountValue');
                         amountInput.addEventListener('input', function() {
@@ -79,12 +80,23 @@
                 <div class="form-group">
                     <textarea name="desc" class="form-control" placeholder="Tell us about your business or activity (e.g., clothing store, barbershop, office space, etc.)" rows="3"></textarea>
                 </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="discoverable">
+                        I agree to let landlords find my profile, including my name, space preference, budget, and activity description.
+                    </label>
+                </div>
             <% } %>
             
             <div class="form-group">
                 <input type="submit" class="btn btn-register" value="Create Account">
             </div>
         </form>
+        <script nonce="<%= cspNonce %>">
+            document.getElementById('roleSelect').addEventListener('change', function() {
+                window.location.href = '/register?role=' + encodeURIComponent(this.value);
+            });
+        </script>
     </div>
 
     <div style="margin-top: 1rem;">

@@ -15,8 +15,8 @@
             <thead>
                 <tr>
                     <th>Tenant</th>
-                    <th onclick="sortTable(1)">Amount ↑↓</th>
-                    <th onclick="sortTable(2)">Date ↑↓</th>
+                    <th data-sort-column="1" tabindex="0" role="button">Amount ↑↓</th>
+                    <th data-sort-column="2" tabindex="0" role="button">Date ↑↓</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@
         </table>
     </div>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
     // Sort table function (column index 1 = Amount, 2 = Date)
     function sortTable(columnIndex) {
         const table = document.getElementById("paymentsTable");
@@ -54,4 +54,14 @@
         tbody.innerHTML = "";
         sortedRows.forEach(row => tbody.appendChild(row));
     }
+    document.querySelectorAll('[data-sort-column]').forEach((header) => {
+        const sort = () => sortTable(Number(header.dataset.sortColumn));
+        header.addEventListener('click', sort);
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                sort();
+            }
+        });
+    });
     </script>
