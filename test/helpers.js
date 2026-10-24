@@ -64,15 +64,13 @@ export async function addLease(db, { renterId, roomId, value, end = "2099-01-01"
     await db.query("UPDATE rooms SET is_available = FALSE, renter_id = $1 WHERE id = $2", [renterId, roomId]);
 }
 
-// Every POST needs the CSRF token that the server prints in its forms. This reads it from a page,
-// the same way a browser would, then sends it back as the hidden "_csrf" field.
+// A browser gets the same session-bound token from this endpoint for React forms.
 export async function csrfToken(agent, headers = {}) {
-    let req = agent.get("/login");
+    let req = agent.get("/api/csrf-token");
     for (const [k, v] of Object.entries(headers)) req = req.set(k, v);
     const res = await req;
-    const match = /name="_csrf" value="([^"]+)"/.exec(res.text);
-    if (!match) throw new Error("No CSRF token found on /login");
-    return match[1];
+    if (res.status !== 200 || typeof res.body.csrfToken !== "string") throw new Error("No CSRF token returned by /api/csrf-token");
+    return res.body.csrfToken;
 }
 
 // { csrf: false } sends the form WITHOUT a token (what an attacker's page would do).

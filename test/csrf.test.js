@@ -66,6 +66,17 @@ describe("CSRF: forms submitted without the secret token are refused", () => {
         const res = await request(app).post("/login").type("form").send({ _csrf: "abc", email: "a@b.co", password: "x", role: "renter" });
         expect(res.status).toBe(403);
     });
+
+    it("returns a JSON CSRF error to the React auth form", async () => {
+        const { app } = makeApp(db);
+        const response = await request(app)
+            .post("/login")
+            .set("Accept", "application/json")
+            .type("form")
+            .send({ email: "a@b.co", password: "password", role: "landlord" });
+        expect(response.status).toBe(403);
+        expect(response.body.error).toContain("session expired");
+    });
 });
 
 describe("CSRF: the token itself", () => {
@@ -109,23 +120,31 @@ describe("Content Security Policy", () => {
         expect(secondNonce).not.toBe(firstNonce);
     });
 
+    it.each(["/", "/login", "/register?role=landlord", "/react/", "/react/login", "/react/register?role=renter"])("serves the React auth shell at %s", async (url) => {
+        const { app } = makeApp(db);
+        const response = await request(app).get(url);
+        expect(response.status).toBe(200);
+        expect(response.text).toContain('id="root"');
+        expect(response.text).toContain("/react/assets/");
+    });
+
     it("puts the response nonce on inline scripts and removes inline event handlers", async () => {
         const { app } = makeApp(db);
         const anonymous = request.agent(app);
         const pages = [
-            await anonymous.get("/register?role=renter"),
-            await anonymous.get("/login"),
+            await anonymous.get("/register/classic?role=renter"),
+            await anonymous.get("/login/classic"),
         ];
         await addLandlord(db, { email: "lana@example.com" });
         const landlord = request.agent(app);
         await login(landlord, { email: "lana@example.com", role: "landlord" });
-        pages.push(await landlord.get("/dashboard"));
-        pages.push(await landlord.get("/lease"));
-        pages.push(await landlord.get("/payments"));
+        pages.push(await landlord.get("/dashboard/classic"));
+        pages.push(await landlord.get("/lease/classic"));
+        pages.push(await landlord.get("/payments/classic"));
         const renter = request.agent(app);
         await addRenter(db, { email: "rita@example.com" });
         await login(renter, { email: "rita@example.com", role: "renter" });
-        pages.push(await renter.get("/tDashboard"));
+        pages.push(await renter.get("/tDashboard/classic"));
 
         let totalScripts = 0;
         for (const page of pages) {
@@ -154,15 +173,15 @@ describe("CSRF: every form in the app carries the token", () => {
     async function pagesFor(app) {
         const pages = {};
         const anon = request.agent(app);
-        for (const url of ["/login", "/register?role=landlord", "/register?role=renter"]) pages[url] = (await anon.get(url)).text;
+        for (const url of ["/login/classic", "/register/classic?role=landlord", "/register/classic?role=renter"]) pages[url] = (await anon.get(url)).text;
 
         const landlord = await loggedInLandlord(app);
-        for (const url of ["/dashboard", "/lease", "/contracts", "/payments", "/messages"]) pages[url] = (await landlord.get(url)).text;
+        for (const url of ["/dashboard/classic", "/lease/classic", "/contracts/classic", "/payments/classic", "/messages/classic"]) pages[url] = (await landlord.get(url)).text;
 
         await addRenter(db, { email: "rita@example.com" });
         const renter = request.agent(app);
         await login(renter, { email: "rita@example.com", role: "renter" });
-        pages["/tDashboard"] = (await renter.get("/tDashboard")).text;
+        pages["/tDashboard/classic"] = (await renter.get("/tDashboard/classic")).text;
         return pages;
     }
 
@@ -179,7 +198,7 @@ describe("CSRF: every form in the app carries the token", () => {
     it("has a logout form (not a link) in the menus", async () => {
         const { app } = makeApp(db);
         const pages = await pagesFor(app);
-        for (const url of ["/dashboard", "/lease", "/tDashboard"]) {
+        for (const url of ["/dashboard/classic", "/lease/classic", "/tDashboard/classic"]) {
             expect(pages[url], url).toContain('action="/logout" method="POST"');
             expect(pages[url], url).not.toContain('href="/logout"');
         }

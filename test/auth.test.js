@@ -23,7 +23,8 @@ describe("login: the server decides who you are, not the form", () => {
         redirectsTo(await login(agent, { email: "lana@example.com", role: "landlord" }), "/dashboard");
         const dash = await agent.get("/dashboard");
         expect(dash.status).toBe(200);
-        expect(dash.text).toContain("Welcome, Lana Landlord");
+        expect(dash.text).toContain('id="root"');
+        expect((await agent.get("/api/dashboard-data")).body.landlordName).toBe("Lana Landlord");
     });
 
     it("does not let a renter become a landlord by picking 'landlord' in the form", async () => {
@@ -71,6 +72,32 @@ describe("login: the server decides who you are, not the form", () => {
         await addLandlord(db, { email: "lana@example.com" });
         const { app } = makeApp(db);
         redirectsTo(await login(request.agent(app), { email: "  LANA@Example.com ", role: "landlord" }), "/dashboard");
+    });
+
+    it("authenticates the React login form and returns the role-based destination", async () => {
+        await addLandlord(db, { email: "lana@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        const response = await login(agent, { email: "lana@example.com", role: "landlord" }, {
+            headers: { Accept: "application/json" },
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ redirect: "/dashboard" });
+        expect((await agent.get("/api/dashboard-data")).status).toBe(200);
+    });
+
+    it("returns a clear JSON login error without creating an authenticated session", async () => {
+        await addLandlord(db, { email: "lana@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        const response = await login(agent, { email: "lana@example.com", role: "landlord", password: "wrong-password" }, {
+            headers: { Accept: "application/json" },
+        });
+
+        expect(response.status).toBe(401);
+        expect(response.body.error).toContain("incorrect credentials");
+        expect((await agent.get("/api/dashboard-data")).status).toBe(401);
     });
 
     it("refuses nonsense input instead of crashing", async () => {
@@ -131,7 +158,7 @@ describe("sessions", () => {
         const { app } = makeApp(db, { production: true });
         const https = { "X-Forwarded-Proto": "https" }; // pretend a proxy told us the visitor used HTTPS
         // Secure cookies are never sent back over plain http, so carry the cookie by hand in this one test.
-        const page = await request(app).get("/login").set(https);
+        const page = await request(app).get("/login/classic").set(https);
         const sessionCookie = page.headers["set-cookie"][0].split(";")[0];
         const token = /name="_csrf" value="([^"]+)"/.exec(page.text)[1];
         const res = await request(app)
@@ -149,7 +176,8 @@ describe("sessions", () => {
     it("only creates a session when a page with a form needs a CSRF token", async () => {
         const { app } = makeApp(db);
         expect((await request(app).get("/")).headers["set-cookie"]).toBeUndefined();
-        expect((await request(app).get("/login")).headers["set-cookie"].join(";")).toContain("connect.sid");
+        expect((await request(app).get("/login")).headers["set-cookie"]).toBeUndefined();
+        expect((await request(app).get("/login/classic")).headers["set-cookie"].join(";")).toContain("connect.sid");
     });
 
     it("keeps only id, role and name in the session (no password hash)", async () => {
@@ -213,8 +241,42 @@ describe("registration", () => {
         redirectsTo(await form(agent, "post", "/register", renter), "/tDashboard");
         const page = await agent.get("/tDashboard");
         expect(page.status).toBe(200);
-        expect(page.text).toContain("Rita Renter");
+        expect(page.text).toContain('id="root"');
+        expect((await agent.get("/api/renter-dashboard-data")).body.renter.full_name).toBe("Rita Renter");
         expect((await db.query("SELECT discoverable FROM renters")).rows[0].discoverable).toBe(false);
+    });
+
+    it("registers through the React form and returns the existing role-based destination", async () => {
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        const response = await form(agent, "post", "/register", renter, {
+            headers: { Accept: "application/json" },
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ redirect: "/tDashboard" });
+        expect((await agent.get("/api/renter-dashboard-data")).body.renter.discoverable).toBe(false);
+    });
+
+    it("returns validation and duplicate-account errors to the React registration form", async () => {
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        const invalid = await form(agent, "post", "/register", { role: "landlord" }, {
+            headers: { Accept: "application/json" },
+        });
+        expect(invalid.status).toBe(400);
+        expect(invalid.body.error).toContain("Please check your details");
+
+        await addLandlord(db, { email: "lana@example.com" });
+        const duplicate = await form(agent, "post", "/register", {
+            role: "landlord",
+            full_name: "Another Lana",
+            email: "lana@example.com",
+            password: PASSWORD,
+            rooms_owned: "1",
+        }, { headers: { Accept: "application/json" } });
+        expect(duplicate.status).toBe(409);
+        expect(duplicate.body.error).toContain("User already exists");
     });
 
     it("stores a renter's explicit discovery consent", async () => {

@@ -99,7 +99,16 @@ cp .env.example .env   # fill in your database and SESSION_SECRET
 npm install
 npm start              # http://localhost:3000
 npm test               # runs the whole test suite (no database needed)
+npm run build          # builds the React workspaces into public/react
 ```
+
+### Gradual React migration
+
+The public home, login, registration, and all routed post-login landlord and renter screens use React + Vite. Express remains responsible for sessions, CSRF, role authorization, validation, rate limiting, and PostgreSQL. Login and registration retain the existing `/login` and `/register` POST endpoints; their classic EJS pages remain available at `/login/classic` and `/register/classic`. The classic landlord EJS screens remain available at `/dashboard/classic`, `/lease/classic`, `/contracts/classic`, `/payments/classic`, and `/messages/classic`; the original renter dashboard is at `/tDashboard/classic`.
+
+For local frontend development, run `npm run dev:backend` in one terminal and `npm run dev:frontend` in another. The Vite proxy expects Express to be listening on `127.0.0.1:3000`; running `nodemon app.js` does not start the server because `app.js` exports the app factory. Use `npm start` instead of `npm run dev:backend` for a non-watch backend. Open the Vite URL and use the React sign-in/registration flow; Vite hands role-based post-auth redirects to the corresponding React workspace. Vite proxies API, authentication POST, mutation, and classic-page requests to Express. Vercel runs `npm run build` and serves the React bundle under `/react/`.
+
+React auth screens fetch a session-bound CSRF token and post credentials or registration data to the same Express endpoints, which retain their existing validation, password hashing, role assignment, sessions, and rate limits. The React overview/contracts screens read landlord-scoped dashboard data; the lease workspace retains its existing landlord-scoped API and room/lease POST routes. The renter dashboard reads only the current renter's profile and lease records, and its privacy setting continues to use the existing CSRF-protected backend route. Every React workspace uses the existing session and role checks and includes CSRF-protected POST logout. Payments and messages remain explicitly marked sample/not-yet-connected experiences; the migration does not invent database-backed payment or messaging features.
 
 If your database already exists, apply the migrations below. The new consent column defaults existing renters to private; do not mark existing renters discoverable without their consent. Check for duplicate room titles per landlord before creating the unique index:
 

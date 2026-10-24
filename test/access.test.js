@@ -24,7 +24,34 @@ const redirectsTo = (res, url) => {
 };
 const count = async (table) => (await db.query(`SELECT COUNT(*)::int AS n FROM ${table}`)).rows[0].n;
 
-const LANDLORD_PAGES = ["/dashboard", "/lease", "/contracts", "/messages", "/payments", "/profile", "/account"];
+const LANDLORD_PAGES = [
+    "/dashboard",
+    "/react/dashboard",
+    "/dashboard/classic",
+    "/lease",
+    "/react/lease",
+    "/lease/classic",
+    "/contracts",
+    "/react/contracts",
+    "/messages",
+    "/react/messages",
+    "/payments",
+    "/react/payments",
+    "/profile",
+    "/react/profile",
+    "/account",
+    "/react/account",
+];
+const RENTER_PAGES = [
+    "/tDashboard",
+    "/react/tDashboard",
+    "/tLease",
+    "/react/tLease",
+    "/tPayments",
+    "/react/tPayments",
+    "/tMessages",
+    "/react/tMessages",
+];
 
 describe("who can open what", () => {
     it.each(LANDLORD_PAGES)("renders %s for a logged-in landlord", async (page) => {
@@ -35,7 +62,7 @@ describe("who can open what", () => {
         expect((await agent.get(page)).status).toBe(200);
     });
 
-    it.each(["/", "/login", "/register?role=landlord", "/register?role=renter"])("renders the public page %s", async (page) => {
+    it.each(["/", "/login", "/register?role=landlord", "/register?role=renter", "/login/classic", "/register/classic?role=renter"])("renders the public page %s", async (page) => {
         const { app } = makeApp(db);
         expect((await request(app).get(page)).status).toBe(200);
     });
@@ -49,6 +76,9 @@ describe("who can open what", () => {
         const { app } = makeApp(db);
         expect((await request(app).get("/api/available-rooms")).status).toBe(401);
         expect((await request(app).get("/api/renter-details/Rita%20Renter")).status).toBe(401);
+        expect((await request(app).get("/api/dashboard-data")).status).toBe(401);
+        expect((await request(app).get("/api/renter-dashboard-data")).status).toBe(401);
+        expect((await request(app).get("/api/profile-data")).status).toBe(401);
     });
 
     it("lets anonymous visitors change nothing", async () => {
@@ -73,6 +103,27 @@ describe("who can open what", () => {
         await login(agent, { email: "lana@example.com", role: "landlord" });
         redirectsTo(await agent.get("/tDashboard"), "/dashboard"); // bounced to their own home
     });
+
+    it.each(RENTER_PAGES)("renders %s for a logged-in renter", async (page) => {
+        await addRenter(db, { email: "rita@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "rita@example.com", role: "renter" });
+        expect((await agent.get(page)).status).toBe(200);
+    });
+
+    it.each(RENTER_PAGES)("keeps a landlord out of %s", async (page) => {
+        await addLandlord(db, { email: "lana@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "lana@example.com", role: "landlord" });
+        redirectsTo(await agent.get(page), "/dashboard");
+    });
+
+    it.each(RENTER_PAGES)("sends anonymous visitors from %s to /login", async (page) => {
+        const { app } = makeApp(db);
+        redirectsTo(await request(app).get(page), "/login");
+    });
 });
 
 describe("a landlord only sees their own business", () => {
@@ -87,13 +138,59 @@ describe("a landlord only sees their own business", () => {
         const { app } = makeApp(db);
         const agent = request.agent(app);
         await login(agent, { email: "a@example.com", role: "landlord" });
-        const page = (await agent.get("/dashboard")).text;
+        const dashboard = await agent.get("/api/dashboard-data");
+        expect(dashboard.status).toBe(200);
+        expect(dashboard.body.contracts.map((contract) => contract.tenant_name)).toEqual(["Alice Tenant"]);
+        expect(dashboard.body.totalPayments).toBe(1200);
+        expect((await agent.get("/dashboard/classic")).text).toContain("Alice Tenant");
+    });
 
-        expect(page).toContain("Alice Tenant");
-        expect(page).not.toContain("Bob Tenant");
-        expect(page).toMatch(/<span>\s*1200\s*<\/span>/);
-        expect(page).not.toContain("3500");
-        expect(page).not.toContain("4700");
+    it("keeps dashboard data private from renters", async () => {
+        await addRenter(db, { email: "rita@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "rita@example.com", role: "renter" });
+        expect((await agent.get("/api/dashboard-data")).status).toBe(401);
+    });
+
+    it("returns only the signed-in renter's privacy and lease data", async () => {
+        const landlordId = await addLandlord(db, { email: "landlord@example.com" });
+        const renterA = await addRenter(db, { name: "Rita Renter", email: "rita@example.com" });
+        const renterB = await addRenter(db, { name: "Robin Renter", email: "robin@example.com" });
+        await addLease(db, { renterId: renterA, roomId: await addRoom(db, landlordId, "Rita room"), value: 900 });
+        await addLease(db, { renterId: renterB, roomId: await addRoom(db, landlordId, "Robin room"), value: 1200 });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "rita@example.com", role: "renter" });
+
+        const response = await agent.get("/api/renter-dashboard-data");
+        expect(response.status).toBe(200);
+        expect(response.body.renter.full_name).toBe("Rita Renter");
+        expect(response.body.leases.map((lease) => lease.room_title)).toEqual(["Rita room"]);
+    });
+
+    it("saves renter privacy preferences through the React JSON request", async () => {
+        await addRenter(db, { email: "rita@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "rita@example.com", role: "renter" });
+        const { csrfToken } = (await agent.get("/api/csrf-token")).body;
+
+        const enabled = await agent.post("/renter/discoverability")
+            .set("Accept", "application/json")
+            .set("X-CSRF-Token", csrfToken)
+            .type("form")
+            .send({ discoverable: "on" });
+        expect(enabled.status).toBe(200);
+        expect(enabled.body.discoverable).toBe(true);
+
+        const disabled = await agent.post("/renter/discoverability")
+            .set("Accept", "application/json")
+            .set("X-CSRF-Token", csrfToken)
+            .type("form")
+            .send({});
+        expect(disabled.status).toBe(200);
+        expect(disabled.body.discoverable).toBe(false);
     });
 
     it("lists only their own rooms and contracts on the lease page", async () => {
@@ -105,7 +202,7 @@ describe("a landlord only sees their own business", () => {
         const { app } = makeApp(db);
         const agent = request.agent(app);
         await login(agent, { email: "a@example.com", role: "landlord" });
-        const page = (await agent.get("/lease")).text;
+        const page = (await agent.get("/lease/classic")).text;
         expect(page).toContain("Alpha Room");
         expect(page).not.toContain("Bravo Room");
     });
@@ -122,6 +219,51 @@ describe("a landlord only sees their own business", () => {
         const rooms = (await agent.get("/api/available-rooms")).body;
         expect(rooms.map((r) => r.title)).toEqual(["Alpha Room"]);
     });
+
+    it("issues a session-bound CSRF token for the React client", async () => {
+        await addLandlord(db, { email: "a@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "a@example.com", role: "landlord" });
+
+        const first = await agent.get("/api/csrf-token");
+        const second = await agent.get("/api/csrf-token");
+        expect(first.status).toBe(200);
+        expect(first.body.csrfToken).toMatch(/^[0-9a-f]{64}$/);
+        expect(second.body.csrfToken).toBe(first.body.csrfToken);
+    });
+
+    it("returns lease data only for the signed-in landlord", async () => {
+        const a = await addLandlord(db, { name: "Landlord A", email: "a@example.com" });
+        const b = await addLandlord(db, { name: "Landlord B", email: "b@example.com" });
+        const roomA = await addRoom(db, a, "Alpha Room");
+        const roomB = await addRoom(db, b, "Bravo Room");
+        const renterA = await addRenter(db, { name: "Alice Tenant", email: "alice@example.com" });
+        const renterB = await addRenter(db, { name: "Bob Tenant", email: "bob@example.com" });
+        await addLease(db, { renterId: renterA, roomId: roomA, value: 1100 });
+        await addLease(db, { renterId: renterB, roomId: roomB, value: 2200 });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "a@example.com", role: "landlord" });
+
+        const response = await agent.get("/api/lease-data");
+        expect(response.status).toBe(200);
+        expect(response.body.landlordName).toBe("Landlord A");
+        expect(response.body.rooms.map((room) => room.title)).toEqual(["Alpha Room"]);
+        expect(response.body.leases.map((lease) => lease.renter_name)).toEqual(["Alice Tenant"]);
+    });
+
+    it("returns only non-sensitive profile fields for the signed-in landlord", async () => {
+        await addLandlord(db, { name: "Lana Landlord", email: "lana@example.com" });
+        const { app } = makeApp(db);
+        const agent = request.agent(app);
+        await login(agent, { email: "lana@example.com", role: "landlord" });
+
+        const response = await agent.get("/api/profile-data");
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ full_name: "Lana Landlord", email: "lana@example.com", rooms_owned: 5 });
+        expect(response.text).not.toContain("password_hash");
+    });
 });
 
 describe("renter discoverability and consent", () => {
@@ -132,7 +274,7 @@ describe("renter discoverability and consent", () => {
         const agent = await request.agent(app);
         await login(agent, { email: "a@example.com", role: "landlord" });
 
-        const leasePage = await agent.get("/lease");
+        const leasePage = await agent.get("/lease/classic");
         expect(leasePage.text).not.toContain("Private Renter");
         expect((await agent.get("/api/renter-details/Private%20Renter")).status).toBe(404);
     });
@@ -145,7 +287,7 @@ describe("renter discoverability and consent", () => {
         const agent = await request.agent(app);
         await login(agent, { email: "a@example.com", role: "landlord" });
 
-        const leasePage = await agent.get("/lease");
+        const leasePage = await agent.get("/lease/classic");
         expect(leasePage.text).toContain("Public Renter");
         expect(leasePage.text).toContain("900");
         expect(leasePage.text).not.toContain("Private Renter");
@@ -183,7 +325,7 @@ describe("renter discoverability and consent", () => {
         const renter = request.agent(app);
         await login(renter, { email: "rita@example.com", role: "renter" });
 
-        expect((await renter.get("/tDashboard")).text).toContain("checked");
+        expect((await renter.get("/tDashboard/classic")).text).toContain("checked");
         redirectsTo(await form(renter, "post", "/renter/discoverability", {}), "/tDashboard");
         expect((await db.query("SELECT discoverable FROM renters")).rows[0].discoverable).toBe(false);
 
@@ -325,14 +467,14 @@ describe("POST /newRenter (assigning a renter to a room)", () => {
 });
 
 describe("POST /newRoom", () => {
-    const room = (agent, overrides = {}) =>
+    const room = (agent, overrides = {}, options = {}) =>
         form(agent, "post", "/newRoom", {
             newRoomName: "Suite 1",
             newPropertyDetails: "Corner unit",
             roomType: "commercial",
             newRoomValue: "1500",
             ...overrides,
-        });
+        }, options);
 
     const loginAs = async (app, email) => {
         const agent = request.agent(app);
@@ -346,6 +488,17 @@ describe("POST /newRoom", () => {
         redirectsTo(await room(await loginAs(app, "a@example.com")), "/lease");
         const rows = (await db.query("SELECT landlord_id, title FROM rooms")).rows;
         expect(rows).toEqual([{ landlord_id: a, title: "Suite 1" }]);
+    });
+
+    it("supports React JSON submissions while preserving the existing form endpoint", async () => {
+        const a = await addLandlord(db, { email: "a@example.com" });
+        const { app } = makeApp(db);
+        const agent = await loginAs(app, "a@example.com");
+        const response = await room(agent, {}, { headers: { Accept: "application/json" } });
+
+        expect(response.status).toBe(201);
+        expect(response.body).toEqual({ message: "Room created." });
+        expect((await db.query("SELECT landlord_id FROM rooms")).rows[0].landlord_id).toBe(a);
     });
 
     it("enforces the room limit", async () => {
