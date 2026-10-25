@@ -1,6 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
+  "outputDirectory": "public/react",
   "functions": {
     "api/index.js": {
       "includeFiles": "{views/**,public/react/**}"
